@@ -50,3 +50,8 @@ INSERT INTO rating (id, number, course_id) VALUES
                                                (7, 5, 4),
                                                (8, 4, 5),
                                                (9, 3, 5);
+
+ALTER TABLE course ALTER COLUMN id RESTART WITH 6;
+ALTER TABLE author ALTER COLUMN id RESTART WITH 5;
+ALTER TABLE assessment ALTER COLUMN id RESTART WITH 6;
+ALTER TABLE rating ALTER COLUMN id RESTART WITH 10;
