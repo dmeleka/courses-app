@@ -1,10 +1,10 @@
 package com.sumerge.task.services;
 
 import com.sumerge.task.dtos.CourseDTO;
+import com.sumerge.task.exceptions.CourseNotFoundException;
 import com.sumerge.task.mappers.CourseMapper;
 import com.sumerge.task.models.Course;
 import com.sumerge.task.repositories.CourseRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,8 +33,8 @@ public class CourseService {
     }
 
     @Autowired
-    public void setCourseRecommender(@Qualifier("javascriptCourseRecommender") CourseRecommender ratingBasedCourseRecommender) {
-        this.javascriptCourseRecommender = ratingBasedCourseRecommender;
+    public void setCourseRecommender(@Qualifier("javascriptCourseRecommender") CourseRecommender javascriptCourseRecommender) {
+        this.javascriptCourseRecommender = javascriptCourseRecommender;
     }
 
     public CourseDTO addCourse(@RequestBody Course course) {
@@ -41,7 +42,8 @@ public class CourseService {
     }
 
     public CourseDTO getCourseById(long id) {
-        return courseMapper.toDTO(courseRepository.findById(id).get());
+        Course course = courseRepository.findById(id).orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + id));
+        return courseMapper.toDTO(course);
     }
 
     public Page<CourseDTO> getAllCourses(int page, int size) {
@@ -65,14 +67,14 @@ public class CourseService {
     }
 
     public void deleteCourseById(long cid) {
-        Course course = courseRepository.findById(cid).orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + cid));
+        Course course = courseRepository.findById(cid).orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + cid));
         course.getAuthors().clear();
         courseRepository.save(course);
         courseRepository.delete(course);
     }
 
     public CourseDTO updateCourse(long cid, CourseDTO courseDTO) {
-        Course course = courseRepository.findById(cid).orElseThrow(() -> new RuntimeException("Course not found"));
+        Course course = courseRepository.findById(cid).orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + cid));
         courseMapper.updateCourseFromDTO(courseDTO, course);
         Course updatedCourse = courseRepository.save(course);
         return courseMapper.toDTO(updatedCourse);
