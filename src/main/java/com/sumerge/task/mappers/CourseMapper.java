@@ -9,7 +9,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface CourseMapper {
 
-    Course toEntity(CourseDTO courseDTO);
+//    Course toEntity(CourseDTO courseDTO);
 
     CourseDTO toDTO(Course course);
 
