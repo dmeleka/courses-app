@@ -13,12 +13,10 @@ import org.springframework.web.bind.annotation.*;
 public class AuthorController {
 
     private final AuthorService authorService;
-    private final AuthorMapper authorMapper;
 
     @Autowired
-    public AuthorController(AuthorService authorService, AuthorMapper authorMapper) {
+    public AuthorController(AuthorService authorService) {
         this.authorService = authorService;
-        this.authorMapper = authorMapper;
     }
 
     @PostMapping("/addAuthor")
@@ -27,7 +25,7 @@ public class AuthorController {
     }
 
     @GetMapping("/getAuthorByEmail")
-    public ResponseEntity<AuthorDTO> getAuthorByEmail(@RequestBody AuthorDTO authorDTO) {
-        return ResponseEntity.ok(authorService.getAuthorByEmail(authorMapper.toEntity(authorDTO).getEmail()));
+    public ResponseEntity<AuthorDTO> getAuthorByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(authorService.getAuthorByEmail(email));
     }
 }
