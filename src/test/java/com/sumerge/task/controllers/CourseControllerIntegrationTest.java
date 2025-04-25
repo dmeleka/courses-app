@@ -133,4 +133,47 @@ public class CourseControllerIntegrationTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Course not found with id: 999"));
     }
+
+    @Test
+    public void addAuthorToCourse_isOwner_shouldAddAuthorToCourse() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/courses/addAuthor/{cid}", 1)
+                        .header("x-validation-report", "true")
+                        .with(httpBasic("alice@example.com", "password1"))
+                        .param("email", "daniel@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Java Basics"))
+                .andExpect(jsonPath("$.lang").value("JAVA"));
+    }
+
+    @Test
+    public void addAuthorToCourse_isNotOwner_shouldThrowNotCourseOwnerException() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/courses/addAuthor/{cid}", 1)
+                        .header("x-validation-report", "true")
+                        .with(httpBasic("daniel@example.com", "password4"))
+                        .param("email", "daniel@example.com"))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("You are not the owner of this course"));
+    }
+
+    @Test
+    public void addAuthorToCourse_courseNotFound_shouldThrowCourseNotFoundException() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/courses/addAuthor/{cid}", 999)
+                        .header("x-validation-report", "true")
+                        .with(httpBasic("alice@example.com", "password1"))
+                        .param("email", "daniel@example.com"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Course not found with id: 999"));
+    }
+
+    @Test
+    public void addAuthorToCourse_authorNotFound_shouldThrowAuthorNotFoundException() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/courses/addAuthor/{cid}", 1)
+                        .header("x-validation-report", "true")
+                        .with(httpBasic("alice@example.com", "password1"))
+                        .param("email", "wrongemail@example.com"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Author not found with email: wrongemail@example.com"));
+    }
+
 }

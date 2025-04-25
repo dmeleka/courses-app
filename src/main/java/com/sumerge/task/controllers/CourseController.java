@@ -43,4 +43,8 @@ public class CourseController {
         return ResponseEntity.ok(courseService.updateCourse(cid, courseDTO));
     }
 
+    @PutMapping("/addAuthor/{cid}")
+    public ResponseEntity<?> addAuthor(@PathVariable long cid, @RequestParam String email) {
+        return ResponseEntity.ok(courseService.addAuthorToCourse(cid, email));
+    }
 }
