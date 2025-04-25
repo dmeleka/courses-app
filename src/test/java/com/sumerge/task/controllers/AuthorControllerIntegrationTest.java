@@ -2,24 +2,26 @@ package com.sumerge.task.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sumerge.task.models.Author;
-import com.sumerge.task.repositories.AuthorRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.sumerge.task.security.SecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@Import(SecurityConfig.class)
+@Transactional
 public class AuthorControllerIntegrationTest {
 
     @Autowired
@@ -29,27 +31,18 @@ public class AuthorControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private AuthorRepository authorRepository;
+    PasswordEncoder passwordEncoder;
 
-    private Author author;
-
-    @BeforeEach
-    void setUp() {
-        author = new Author();
-        author.setName("Test Author");
-        author.setEmail("author@test.com");
-    }
-
-    @AfterEach
-    void tearDown() {
-        authorRepository.deleteAll();
-    }
-
-    @Transactional
     @Test
-    public void testAddAuthor() throws Exception {
+    public void addAuthor_emailNotExists_shouldReturnAuthorDTO() throws Exception {
+        Author author = new Author();
+        author.setName("Test Author");
+        author.setEmail("author@example.com");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setCourses(new ArrayList<>());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/authors/addAuthor")
+        mockMvc.perform(MockMvcRequestBuilders.post("/authors/add")
+                        .header("x-validation-report", "true")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(author)))
                 .andExpect(status().isOk())
@@ -57,25 +50,40 @@ public class AuthorControllerIntegrationTest {
                 .andExpect(jsonPath("$.email").value(author.getEmail()));
     }
 
-    @Transactional
     @Test
-    public void getAuthorByEmail_authorFound_shouldReturnAuthorDTO() throws Exception {
-        authorRepository.save(author);
+    public void addAuthor_emailExists_shouldThrowEmailAlreadyExistsException() throws Exception {
+        Author author = new Author();
+        author.setName("Test Author");
+        author.setEmail("author@example.com");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setCourses(new ArrayList<>());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/authors/getAuthorByEmail")
-                        .param("email", author.getEmail()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(author.getName()))
-                .andExpect(jsonPath("$.email").value(author.getEmail()));
+        mockMvc.perform(MockMvcRequestBuilders.post("/authors/add")
+                        .header("x-validation-report", "true")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(author)))
+                .andExpect(status().isConflict())
+                .andExpect(content().string("The email 'author@example.com' is already in use. Please choose a different email."));
     }
 
-    @Transactional
+    @Test
+    public void getAuthorByEmail_authorFound_shouldReturnAuthorDTO() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/authors/getByEmail")
+                        .header("x-validation-report", "true")
+                        .param("email", "alice@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Alice Smith"))
+                .andExpect(jsonPath("$.email").value("alice@example.com"));
+    }
+
     @Test
     public void getAuthorByEmail_authorNotFound_shouldThrowAuthorNotFoundException() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/authors/getAuthorByEmail")
-                        .param("email", author.getEmail()))
+        mockMvc.perform(MockMvcRequestBuilders.get("/authors/getByEmail")
+                        .header("x-validation-report", "true")
+                        .param("email", "wrongemail@example.com"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Author not found with email: " + author.getEmail()));
+                .andExpect(content().string("Author not found with email: wrongemail@example.com"));
     }
 }
