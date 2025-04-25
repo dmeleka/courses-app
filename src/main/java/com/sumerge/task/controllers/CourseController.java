@@ -17,12 +17,12 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    @PostMapping("/addCourse")
+    @PostMapping("/add")
     public ResponseEntity<?> addCourse(@RequestBody Course course) {
         return ResponseEntity.ok(courseService.addCourse(course));
     }
 
-    @GetMapping("/allCourses/{page}/{size}")
+    @GetMapping("/all/{page}/{size}")
     public ResponseEntity<?> getAllRecommendedCourses(@PathVariable int page, @PathVariable int size) {
         return ResponseEntity.ok(courseService.getAllCourses(page, size));
     }
@@ -32,13 +32,13 @@ public class CourseController {
         return ResponseEntity.ok(courseService.getCourseById(cid));
     }
 
-    @DeleteMapping("/{cid}")
+    @DeleteMapping("/delete/{cid}")
     public ResponseEntity<?> deleteCourseById(@PathVariable long cid) {
         courseService.deleteCourseById(cid);
         return ResponseEntity.ok("Deleted course");
     }
 
-    @PutMapping("/{cid}")
+    @PutMapping("/update/{cid}")
     public ResponseEntity<?> getCourseById(@PathVariable Long cid, @RequestBody CourseDTO courseDTO) {
         return ResponseEntity.ok(courseService.updateCourse(cid, courseDTO));
     }

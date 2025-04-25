@@ -1,7 +1,6 @@
 package com.sumerge.task.controllers;
 
 import com.sumerge.task.dtos.AuthorDTO;
-import com.sumerge.task.mappers.AuthorMapper;
 import com.sumerge.task.models.Author;
 import com.sumerge.task.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +18,12 @@ public class AuthorController {
         this.authorService = authorService;
     }
 
-    @PostMapping("/addAuthor")
+    @PostMapping("/add")
     public ResponseEntity<AuthorDTO> addAuthor(@RequestBody Author author) {
         return ResponseEntity.ok(authorService.addAuthor(author));
     }
 
-    @GetMapping("/getAuthorByEmail")
+    @GetMapping("/getByEmail")
     public ResponseEntity<AuthorDTO> getAuthorByEmail(@RequestParam String email) {
         return ResponseEntity.ok(authorService.getAuthorByEmail(email));
     }
