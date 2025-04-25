@@ -54,7 +54,7 @@ public class AuthorControllerIntegrationTest {
     public void addAuthor_emailExists_shouldThrowEmailAlreadyExistsException() throws Exception {
         Author author = new Author();
         author.setName("Test Author");
-        author.setEmail("author@example.com");
+        author.setEmail("alice@example.com");
         author.setPassword(passwordEncoder.encode("password"));
         author.setCourses(new ArrayList<>());
 
@@ -63,7 +63,7 @@ public class AuthorControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(author)))
                 .andExpect(status().isConflict())
-                .andExpect(content().string("The email 'author@example.com' is already in use. Please choose a different email."));
+                .andExpect(content().string("The email 'alice@example.com' is already in use. Please choose a different email."));
     }
 
     @Test
