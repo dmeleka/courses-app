@@ -2,6 +2,7 @@ package com.sumerge.task.services;
 
 import com.sumerge.task.dtos.AuthorDTO;
 import com.sumerge.task.exceptions.AuthorNotFoundException;
+import com.sumerge.task.exceptions.EmailAlreadyExistsException;
 import com.sumerge.task.mappers.AuthorMapper;
 import com.sumerge.task.models.Author;
 import com.sumerge.task.repositories.AuthorRepository;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -25,6 +27,9 @@ public class AuthorServiceTest {
 
     @Mock
     private AuthorMapper authorMapper;
+
+    @Mock
+    PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private AuthorService authorService;
@@ -47,8 +52,10 @@ public class AuthorServiceTest {
 
     @Test
     public void addAuthor_authorIsSaved_shouldReturnSavedAuthorDTO() {
+        when(authorRepository.existsByEmail(author.getEmail())).thenReturn(false);
         when(authorRepository.save(author)).thenReturn(author);
         when(authorMapper.toDTO(author)).thenReturn(authorDTO);
+        when(passwordEncoder.encode(author.getPassword())).thenReturn("encodedPassword");
 
         AuthorDTO output = authorService.addAuthor(author);
 
@@ -57,6 +64,16 @@ public class AuthorServiceTest {
                 () -> assertEquals(authorDTO.getId(), output.getId()),
                 () -> assertEquals(authorDTO.getName(), output.getName())
         );
+    }
+
+    @Test
+    public void addAuthor_emailAlreadyExists_shouldThrowEmailAlreadyExistsException() {
+        when(authorRepository.existsByEmail(author.getEmail())).thenReturn(true);
+
+        EmailAlreadyExistsException exception = assertThrows(EmailAlreadyExistsException.class, () -> {
+            authorService.addAuthor(author);
+        });
+        assertEquals("The email '" + author.getEmail() + "' is already in use. Please choose a different email.", exception.getMessage());
     }
 
     @Test
