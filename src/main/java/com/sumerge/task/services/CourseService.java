@@ -79,14 +79,54 @@ public class CourseService {
     }
 
     public void deleteCourseById(long cid) {
-        Course course = courseRepository.findById(cid).orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + cid));
-        course.getAuthors().clear();
-        courseRepository.save(course);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email;
+
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails) principal).getUsername();
+        } else {
+            email = principal.toString();
+        }
+
+        Course course = courseRepository.findById(cid)
+                .orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + cid));
+
+        Author author = authorRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthorNotFoundException("Author not found with email: " + email));
+
+        boolean isOwner = course.getAuthors().stream()
+                .anyMatch(a -> a.getId().equals(author.getId()));
+
+        if (!isOwner) {
+            throw new NotCourseOwnerException();
+        }
+
         courseRepository.delete(course);
     }
 
     public CourseDTO updateCourse(long cid, CourseDTO courseDTO) {
-        Course course = courseRepository.findById(cid).orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + cid));
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email;
+
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails) principal).getUsername();
+        } else {
+            email = principal.toString();
+        }
+
+        Course course = courseRepository.findById(cid)
+                .orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + cid));
+
+        Author author = authorRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthorNotFoundException("Author not found with email: " + email));
+
+        boolean isOwner = course.getAuthors().stream()
+                .anyMatch(a -> a.getId().equals(author.getId()));
+
+        if (!isOwner) {
+            throw new NotCourseOwnerException();
+        }
+
         courseMapper.updateCourseFromDTO(courseDTO, course);
         Course updatedCourse = courseRepository.save(course);
         return courseMapper.toDTO(updatedCourse);
