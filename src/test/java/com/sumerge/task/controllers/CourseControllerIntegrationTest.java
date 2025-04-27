@@ -4,27 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sumerge.task.dtos.CourseDTO;
 import com.sumerge.task.models.Course;
 import com.sumerge.task.models.Lang;
-import com.sumerge.task.security.SecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Import(SecurityConfig.class)
-@Transactional
-public class CourseControllerIntegrationTest {
+public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -136,13 +127,13 @@ public class CourseControllerIntegrationTest {
 
     @Test
     public void addAuthorToCourse_isOwner_shouldAddAuthorToCourse() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put("/courses/addAuthor/{cid}", 1)
+        mockMvc.perform(MockMvcRequestBuilders.put("/courses/addAuthor/{cid}", 2)
                         .header("x-validation-report", "true")
-                        .with(httpBasic("alice@example.com", "password1"))
+                        .with(httpBasic("bob@example.com", "password2"))
                         .param("email", "daniel@example.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Java Basics"))
+                .andExpect(jsonPath("$.id").value(2))
+                .andExpect(jsonPath("$.name").value("Spring Boot Advanced"))
                 .andExpect(jsonPath("$.lang").value("JAVA"));
     }
 
