@@ -1,14 +1,20 @@
-package com.sumerge.task.services;
+package com.sumerge.task.service;
 
-import com.sumerge.task.dtos.CourseDTO;
-import com.sumerge.task.exceptions.AuthorNotFoundException;
-import com.sumerge.task.exceptions.CourseNotFoundException;
-import com.sumerge.task.exceptions.NotCourseOwnerException;
-import com.sumerge.task.mappers.CourseMapper;
-import com.sumerge.task.models.Author;
-import com.sumerge.task.models.Course;
-import com.sumerge.task.repositories.AuthorRepository;
-import com.sumerge.task.repositories.CourseRepository;
+import com.example.course.CoursesXSD;
+import com.sumerge.task.client.CourseClient;
+import com.sumerge.task.dto.CourseDTO;
+import com.sumerge.task.exception.AuthorNotFoundException;
+import com.sumerge.task.exception.CourseNotFoundException;
+import com.sumerge.task.exception.NotCourseOwnerException;
+import com.sumerge.task.mapper.CourseMapper;
+import com.sumerge.task.model.Author;
+import com.sumerge.task.model.Course;
+import com.sumerge.task.repository.AuthorRepository;
+import com.sumerge.task.repository.CourseRepository;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -19,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +36,7 @@ public class CourseService {
     CourseRepository courseRepository;
     AuthorRepository authorRepository;
     CourseMapper courseMapper;
+    CourseClient courseClient;
     CourseRecommender javaCourseRecommender;
     CourseRecommender javascriptCourseRecommender;
 
@@ -37,6 +45,11 @@ public class CourseService {
         this.javaCourseRecommender = javaCourseRecommender;
         this.courseRepository = courseRepository;
         this.courseMapper = courseMapper;
+    }
+
+    @Autowired
+    public void setCourseClient (CourseClient courseClient) {
+        this.courseClient = courseClient;
     }
 
     @Autowired
@@ -166,4 +179,27 @@ public class CourseService {
 
         return courseMapper.toDTO(course);
     }
+
+    public List<CoursesXSD.CourseXSD> coursesXML () {
+        return parseCoursesXml(courseClient.coursesXML());
+    }
+
+    public static List<CoursesXSD.CourseXSD> parseCoursesXml(String xml) {
+        try {
+
+            JAXBContext jaxbContext = JAXBContext.newInstance(CoursesXSD.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            StringReader reader = new StringReader(xml);
+            CoursesXSD courses = (CoursesXSD) unmarshaller.unmarshal(reader);
+            List<CoursesXSD.CourseXSD> courseList = courses.getCourseXSD();
+            System.out.println("Number of courses: " + (courseList != null ? courseList.size() : "0"));
+            return courseList;
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+
+
 }

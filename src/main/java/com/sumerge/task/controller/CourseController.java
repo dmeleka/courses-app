@@ -1,4 +1,4 @@
-package com.sumerge.task.controllers;
+package com.sumerge.task.controller;
 
 import com.sumerge.task.dto.CourseDTO;
 import com.sumerge.task.model.Course;
@@ -47,5 +47,10 @@ public class CourseController {
     @PutMapping("/addAuthor/{cid}")
     public ResponseEntity<?> addAuthor(@PathVariable long cid, @RequestParam String email) {
         return ResponseEntity.ok(courseService.addAuthorToCourse(cid, email));
+    }
+
+    @GetMapping("/discover")
+    public ResponseEntity<?> getCourses() {
+        return ResponseEntity.ok(courseService.coursesXML());
     }
 }
