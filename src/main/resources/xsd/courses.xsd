@@ -1,0 +1,24 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           targetNamespace="http://example.com/course"
+           xmlns="http://example.com/course">
+
+    <xs:element name="CoursesXSD">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="CourseXSD" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="id" type="xs:long"/>
+                            <xs:element name="name" type="xs:string"/>
+                            <xs:element name="description" type="xs:string"/>
+                            <xs:element name="credit" type="xs:int"/>
+                            <xs:element name="hours" type="xs:int"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
