@@ -1,6 +1,7 @@
 package com.sumerge.task.security;
 
-import com.sumerge.task.security.filters.HeaderFilter;
+import com.sumerge.task.security.filter.HeaderFilter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

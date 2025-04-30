@@ -1,7 +1,8 @@
 package com.sumerge.task.security;
 
-import com.sumerge.task.models.Author;
-import com.sumerge.task.repositories.AuthorRepository;
+import com.sumerge.task.model.Author;
+import com.sumerge.task.repository.AuthorRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

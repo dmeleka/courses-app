@@ -1,14 +1,15 @@
 package com.sumerge.task;
 
-import com.sumerge.task.models.Assessment;
-import com.sumerge.task.models.Course;
-import com.sumerge.task.models.Rating;
-import com.sumerge.task.models.Author;
-import com.sumerge.task.models.Lang;
-import com.sumerge.task.repositories.AssessmentRepository;
-import com.sumerge.task.repositories.AuthorRepository;
-import com.sumerge.task.repositories.CourseRepository;
-import com.sumerge.task.repositories.RatingRepository;
+import com.sumerge.task.model.Assessment;
+import com.sumerge.task.model.Course;
+import com.sumerge.task.model.Rating;
+import com.sumerge.task.model.Author;
+import com.sumerge.task.model.Lang;
+import com.sumerge.task.repository.AssessmentRepository;
+import com.sumerge.task.repository.AuthorRepository;
+import com.sumerge.task.repository.CourseRepository;
+import com.sumerge.task.repository.RatingRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
