@@ -167,4 +167,14 @@ public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(content().string("Author not found with email: wrongemail@example.com"));
     }
 
+    @Test
+    public void parseCourseXml () throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/courses/external")
+                        .header("x-validation-report", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2));
+    }
+
 }
