@@ -6,22 +6,18 @@ import com.sumerge.task.exception.EmailAlreadyExistsException;
 import com.sumerge.task.mapper.AuthorMapper;
 import com.sumerge.task.model.Author;
 import com.sumerge.task.repository.AuthorRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
+@RequiredArgsConstructor
 public class AuthorService {
 
     private final AuthorRepository authorRepository;
     private final AuthorMapper authorMapper;
     private final PasswordEncoder passwordEncoder;
-
-    public AuthorService(AuthorRepository authorRepository, AuthorMapper authorMapper, PasswordEncoder passwordEncoder) {
-        this.authorRepository = authorRepository;
-        this.authorMapper = authorMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public AuthorDTO addAuthor(@RequestBody Author author) {
         if (authorRepository.existsByEmail(author.getEmail())) {

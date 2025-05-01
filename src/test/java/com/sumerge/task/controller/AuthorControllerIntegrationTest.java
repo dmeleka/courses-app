@@ -32,7 +32,7 @@ public class AuthorControllerIntegrationTest extends AbstractIntegrationTest {
         author.setPassword(passwordEncoder.encode("password"));
         author.setCourses(new ArrayList<>());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/authors/add")
+        mockMvc.perform(MockMvcRequestBuilders.post("/authors/")
                         .header("x-validation-report", "true")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(author)))
@@ -49,7 +49,7 @@ public class AuthorControllerIntegrationTest extends AbstractIntegrationTest {
         author.setPassword(passwordEncoder.encode("password"));
         author.setCourses(new ArrayList<>());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/authors/add")
+        mockMvc.perform(MockMvcRequestBuilders.post("/authors/")
                         .header("x-validation-report", "true")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(author)))
@@ -60,7 +60,7 @@ public class AuthorControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void getAuthorByEmail_authorFound_shouldReturnAuthorDTO() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/authors/getByEmail")
+        mockMvc.perform(MockMvcRequestBuilders.get("/authors/")
                         .header("x-validation-report", "true")
                         .param("email", "alice@example.com"))
                 .andExpect(status().isOk())
@@ -71,7 +71,7 @@ public class AuthorControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void getAuthorByEmail_authorNotFound_shouldThrowAuthorNotFoundException() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/authors/getByEmail")
+        mockMvc.perform(MockMvcRequestBuilders.get("/authors/")
                         .header("x-validation-report", "true")
                         .param("email", "wrongemail@example.com"))
                 .andExpect(status().isNotFound())

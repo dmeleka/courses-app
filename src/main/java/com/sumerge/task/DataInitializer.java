@@ -10,6 +10,7 @@ import com.sumerge.task.repository.AuthorRepository;
 import com.sumerge.task.repository.CourseRepository;
 import com.sumerge.task.repository.RatingRepository;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
     private final AuthorRepository authorRepository;
@@ -27,17 +29,6 @@ public class DataInitializer implements CommandLineRunner {
     private final AssessmentRepository assessmentRepository;
     private final RatingRepository ratingRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public DataInitializer(AuthorRepository authorRepository, CourseRepository courseRepository,
-                           AssessmentRepository assessmentRepository, RatingRepository ratingRepository,
-                           PasswordEncoder passwordEncoder) {
-        this.authorRepository = authorRepository;
-        this.courseRepository = courseRepository;
-        this.assessmentRepository = assessmentRepository;
-        this.ratingRepository = ratingRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public void run(String... args) throws Exception {

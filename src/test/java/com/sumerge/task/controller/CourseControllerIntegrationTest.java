@@ -30,7 +30,7 @@ public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
         course1.setAuthors(new ArrayList<>());
         course1.setLang(Lang.JAVA);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/courses/add")
+        mockMvc.perform(MockMvcRequestBuilders.post("/courses/")
                         .header("x-validation-report", "true")
                         .with(httpBasic("alice@example.com", "password1"))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -43,7 +43,7 @@ public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void testGetAllRecommendedCourses() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/courses/all/0/2")
+        mockMvc.perform(MockMvcRequestBuilders.get("/courses/0/2")
                         .header("x-validation-report", "true")
                         .with(httpBasic("alice@example.com", "password1")))
                 .andExpect(status().isOk())
@@ -77,7 +77,7 @@ public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void deleteCourseById_courseFound_shouldDeleteCourse() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/courses/delete/{id}", 1)
+        mockMvc.perform(MockMvcRequestBuilders.delete("/courses/{id}", 1)
                         .header("x-validation-report", "true")
                         .with(httpBasic("alice@example.com", "password1")))
                 .andExpect(status().isOk())
@@ -86,7 +86,7 @@ public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void deleteCourseById_courseNotFound_shouldThrowCourseNotFoundException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/courses/delete/999")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/courses/999")
                         .header("x-validation-report", "true")
                         .with(httpBasic("alice@example.com", "password1")))
                 .andExpect(status().isNotFound())
@@ -99,7 +99,7 @@ public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
         courseDTO1.setName("Test Course 1 DTO");
         courseDTO1.setLang(Lang.JAVA);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/courses/update/{id}", 1)
+        mockMvc.perform(MockMvcRequestBuilders.put("/courses/{id}", 1)
                         .header("x-validation-report", "true")
                         .with(httpBasic("alice@example.com", "password1"))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -116,7 +116,7 @@ public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
         courseDTO1.setName("Test Course 1 DTO");
         courseDTO1.setLang(Lang.JAVA);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/courses/update/999")
+        mockMvc.perform(MockMvcRequestBuilders.put("/courses/999")
                         .header("x-validation-report", "true")
                         .with(httpBasic("alice@example.com", "password1"))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -127,7 +127,7 @@ public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void addAuthorToCourse_isOwner_shouldAddAuthorToCourse() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put("/courses/addAuthor/{cid}", 2)
+        mockMvc.perform(MockMvcRequestBuilders.put("/courses/{cid}/author", 2)
                         .header("x-validation-report", "true")
                         .with(httpBasic("bob@example.com", "password2"))
                         .param("email", "daniel@example.com"))
@@ -139,7 +139,7 @@ public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void addAuthorToCourse_isNotOwner_shouldThrowNotCourseOwnerException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put("/courses/addAuthor/{cid}", 1)
+        mockMvc.perform(MockMvcRequestBuilders.put("/courses/{cid}/author", 1)
                         .header("x-validation-report", "true")
                         .with(httpBasic("daniel@example.com", "password4"))
                         .param("email", "daniel@example.com"))
@@ -149,7 +149,7 @@ public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void addAuthorToCourse_courseNotFound_shouldThrowCourseNotFoundException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put("/courses/addAuthor/{cid}", 999)
+        mockMvc.perform(MockMvcRequestBuilders.put("/courses/{cid}/author", 999)
                         .header("x-validation-report", "true")
                         .with(httpBasic("alice@example.com", "password1"))
                         .param("email", "daniel@example.com"))
@@ -159,7 +159,7 @@ public class CourseControllerIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void addAuthorToCourse_authorNotFound_shouldThrowAuthorNotFoundException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put("/courses/addAuthor/{cid}", 1)
+        mockMvc.perform(MockMvcRequestBuilders.put("/courses/{cid}/author", 1)
                         .header("x-validation-report", "true")
                         .with(httpBasic("alice@example.com", "password1"))
                         .param("email", "wrongemail@example.com"))
